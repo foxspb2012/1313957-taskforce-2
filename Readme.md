@@ -1,7 +1,7 @@
 # Личный проект «TaskForce»
 
 * Студент: [Евгений Потапов](https://up.htmlacademy.ru/nodejs-2/2/user/1313957).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Сальников](https://htmlacademy.ru/profile/id24537).
 
 ---
 
