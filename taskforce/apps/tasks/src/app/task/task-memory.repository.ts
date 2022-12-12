@@ -21,8 +21,7 @@ export class TaskMemoryRepository implements CRUDRepository<TaskEntity, string, 
   }
 
   public async findByCategory(category: string): Promise<Task[]> | null {
-    const tasks = Object.values(this.repository).filter((taskItem) => taskItem.category = category);
-    return {...tasks}
+    return Object.values(this.repository).filter((taskItem) => taskItem.category === category);
   }
 
   public async update(

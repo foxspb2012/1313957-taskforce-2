@@ -1,6 +1,6 @@
-import {User} from '../user/user.interface';
+import {User} from '@taskforce/shared-types';
 
-export interface Comment {
+export interface Response {
   _id: string;
   text: string;
   taskId: string;

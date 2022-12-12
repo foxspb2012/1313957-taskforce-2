@@ -1,9 +1,10 @@
-import {User} from '../user/user.interface';
+import {User} from '@taskforce/shared-types';
 
-export interface Comment {
+export interface Review {
   _id: string;
   text: string;
   taskId: string;
+  score: number;
   author: User;
   creationDate: Date;
 }
