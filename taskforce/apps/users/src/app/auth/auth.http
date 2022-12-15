@@ -7,7 +7,7 @@ Content-Type: application/json
   "name": "Alice",
   "email": "alice@inbox.ru",
   "dateBirth": "2012-02-20",
-  "city": "SPb",
+  "city": "Санкт-Петербург",
   "role": "customer",
   "password": "12346"
 }
@@ -26,6 +26,6 @@ Content-Type: application/json
 ###
 
 # Get user by ID
-GET http://localhost:3333/api/auth/c05eddb6-ddb0-4f9d-b15a-96c7b95b9ce HTTP/1.1
+GET http://localhost:3333/api/auth/639b3416dbbf7012f37a8da2 HTTP/1.1
 
 ###
