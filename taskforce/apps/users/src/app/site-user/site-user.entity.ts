@@ -1,15 +1,16 @@
-import {User, UserRole} from '@taskforce/shared-types';
+import {User, UserRole, UserCity} from '@taskforce/shared-types';
 import {genSalt, hash, compare} from 'bcrypt';
 import {SALT_ROUNDS} from './site-user.constant';
 
 export class SiteUserEntity implements User {
-  public _id?: string;
+  public _id: string;
   public name: string;
   public email: string;
   public dateBirth: Date;
-  public city: string;
+  public city: UserCity;
   public avatar: string;
   public role: UserRole;
+  public rating: number;
   public passwordHash: string;
 
   public async setPassword(password: string): Promise<SiteUserEntity> {
@@ -38,6 +39,7 @@ export class SiteUserEntity implements User {
     this.city = siteUser.city;
     this.avatar = siteUser.avatar;
     this.role = siteUser.role;
+    this.rating = siteUser.rating;
     this.passwordHash = siteUser.passwordHash;
   }
 }

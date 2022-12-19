@@ -1,9 +1,14 @@
-import { Module } from '@nestjs/common';
-import {SiteUserMemoryRepository} from './site-user-memory.repository';
+import {Module} from '@nestjs/common';
+import {MongooseModule} from '@nestjs/mongoose';
+import {SiteUserModel, SiteUserSchema} from './site-user.model';
+import {SiteUserRepository} from './site-user.repository';
 
 @Module({
-  imports: [],
-  providers: [SiteUserMemoryRepository],
-  exports: [SiteUserMemoryRepository],
+  imports: [MongooseModule.forFeature([
+    {name: SiteUserModel.name, schema: SiteUserSchema}
+  ])],
+  providers: [SiteUserRepository],
+  exports: [SiteUserRepository]
 })
-export class SiteUserModule {}
+export class SiteUserModule {
+}

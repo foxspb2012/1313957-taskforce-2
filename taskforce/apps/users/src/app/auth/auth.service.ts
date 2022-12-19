@@ -1,23 +1,27 @@
-import {Injectable} from '@nestjs/common';
-import {SiteUserMemoryRepository} from '../site-user/site-user-memory.repository';
+import {Injectable, Inject} from '@nestjs/common';
+import {SiteUserRepository} from '../site-user/site-user.repository';
 import {AUTH_USER_EXISTS, AUTH_USER_NOT_FOUND, AUTH_USER_PASSWORD_WRONG, AUTH_USER_BY_ID} from './auth.constant';
 import {SiteUserEntity} from '../site-user/site-user.entity';
 import {User} from '@taskforce/shared-types';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {LoginUserDto} from './dto/login-user.dto';
+import {ConfigType} from '@nestjs/config';
+import databaseConfig from '../../config/database.config';
 import * as dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly siteUserRepository: SiteUserMemoryRepository
+    private readonly siteUserRepository: SiteUserRepository,
+    @Inject(databaseConfig.KEY)
+    private readonly mongoConfig: ConfigType<typeof databaseConfig>,
   ) {
   }
 
   async register(dto: CreateUserDto) {
     const {name, email, role, dateBirth, city, password} = dto;
     const siteUser: User = {
-      _id: '', name, email, role, dateBirth: dayjs(dateBirth).toDate(), city, avatar: '', passwordHash: ''
+      name, email, role, dateBirth: dayjs(dateBirth).toDate(), city, avatar: '', passwordHash: '', rating: 0
     };
 
     const existUser = await this.siteUserRepository

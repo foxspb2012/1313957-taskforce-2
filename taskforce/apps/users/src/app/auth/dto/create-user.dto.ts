@@ -1,5 +1,5 @@
 import {ApiProperty} from '@nestjs/swagger';
-import {UserRole} from '@taskforce/shared-types';
+import {UserRole, UserCity} from '@taskforce/shared-types';
 
 export class CreateUserDto {
 
@@ -23,9 +23,11 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: 'User city',
-    example: 'Saint-Petersburg'
+    example: 'Санкт-Петербург',
+    enum: UserCity,
+    required: true,
   })
-  public city: string;
+  public city: UserCity;
 
   @ApiProperty({
     description: 'User role',
