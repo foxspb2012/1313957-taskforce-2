@@ -1,12 +1,11 @@
 import {Module} from '@nestjs/common';
-import {ResponseController} from './response.controller';
 import {ResponseService} from './response.service';
-import {ResponseMemoryRepository} from './response-memory.repository';
+import {ResponseRepository} from './response.repository';
+import {ResponseController} from './response.controller';
 
 @Module({
-  providers: [ResponseMemoryRepository, ResponseService],
   controllers: [ResponseController],
-  exports: [ResponseMemoryRepository],
+  providers: [ResponseService, ResponseRepository],
 })
 export class ResponseModule {
 }

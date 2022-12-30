@@ -13,18 +13,18 @@ export class ResponseController {
   ) {
   }
 
-  @Post('')
+  @Post('/')
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'The new response has been successfully created',
     type: ResponseRdo,
   })
   public async create(@Body() dto: CreateResponseDto) {
-    const newResponse = await this.responseService.create(dto);
+    const newResponse = await this.responseService.createResponse(dto);
     return fillObject(ResponseRdo, newResponse);
   }
 
-  @Get('')
+  @Get('/')
   @ApiQuery({name: 'taskId'})
   @ApiResponse({
     status: HttpStatus.OK,
@@ -32,10 +32,11 @@ export class ResponseController {
     type: [ResponseRdo],
   })
   public async getById(@Query() {taskId}) {
-    const reviews = await this.responseService.getByTaskId(taskId);
-    if (!reviews) {
-      throw new Error('Reviews by task id not found');
+    const id = parseInt(taskId, 10);
+    const responses = await this.responseService.getByTaskId(id);
+    if (!responses) {
+      throw new Error('Responses by task id not found');
     }
-    return fillObject(ResponseRdo, reviews);
+    return fillObject(ResponseRdo, responses);
   }
 }

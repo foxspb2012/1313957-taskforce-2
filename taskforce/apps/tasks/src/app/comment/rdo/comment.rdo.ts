@@ -2,12 +2,12 @@ import {Expose} from "class-transformer";
 import {ApiProperty} from "@nestjs/swagger";
 
 export class CommentRdo {
-  @Expose({name: '_id'})
+  @Expose({name: 'id'})
   @ApiProperty({
     description: 'Comment ID',
-    example: 'f90422bc-e2c7-4908-af5b-dcb6efb99b76',
+    example: 25,
   })
-  public id: string;
+  public id: number;
 
   @Expose()
   @ApiProperty({
@@ -18,22 +18,15 @@ export class CommentRdo {
 
   @Expose()
   @ApiProperty({
-    description: 'Task id for the comment',
-    example: 'cde62511-716e-456c-bc58-cf689bd0591e',
+    description: 'User id of comment',
+    example: '63a01be48cc77837a5801cce',
   })
-  public taskId: string;
-
-  @Expose()
-  @ApiProperty({
-    description: 'Author of comment',
-    example: 'Fox',
-  })
-  public author: string;
+  public userId: string;
 
   @Expose()
   @ApiProperty({
     description: 'Date of creation (ISO format)',
-    example: '1982-02-20'
+    example: '2022-06-24T11:59:45.571+03'
   })
-  public creationDate: string;
+  public createdAt: Date;
 }

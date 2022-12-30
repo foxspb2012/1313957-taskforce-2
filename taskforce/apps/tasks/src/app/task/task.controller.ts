@@ -42,15 +42,16 @@ export class TaskController {
     return fillObject(TaskRdo, existTask);
   }
 
-  @Get('')
-  @ApiQuery({name: 'category'})
+  @Get('/')
+  @ApiQuery({name: 'categoryId'})
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Information about tasks of the same category',
     type: [TaskRdo],
   })
-  public async getByCategory(@Query() {category}) {
-    const tasks = await this.taskService.getByCategory(category);
+  public async getByCategory(@Query() {categoryId}) {
+    const id = parseInt(categoryId, 10);
+    const tasks = await this.taskService.getByCategory(id);
     if (!tasks) {
       throw new Error('Tasks by category not found');
     }
@@ -64,13 +65,14 @@ export class TaskController {
     type: [TaskRdo],
   })
   public async update(@Param() {id}, @Body() dto: UpdateTaskDto) {
-    const existTask = await this.taskService.getTask(id);
+    const taskId = parseInt(id, 10);
+    const existTask = await this.taskService.getTask(taskId);
 
     if (!existTask) {
       throw new Error('Task not found');
     }
 
-    const task = await this.taskService.updateTask(id, dto);
+    const task = await this.taskService.updateTask(taskId, dto);
     return fillObject(TaskRdo, task);
   }
 

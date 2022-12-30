@@ -1,9 +1,7 @@
-import {User} from '../user/user.interface';
-
 export interface Comment {
-  _id: string;
+  id?: number;
   text: string;
-  taskId: string;
-  author: User;
-  creationDate: Date;
+  taskId: number;
+  userId: string;
+  createdAt?: Date;
 }

@@ -13,18 +13,18 @@ export class CommentController {
   ) {
   }
 
-  @Post('')
+  @Post('/')
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'The new comment has been successfully created',
     type: CommentRdo,
   })
   public async create(@Body() dto: CreateCommentDto) {
-    const newTask = await this.commentService.createComment(dto);
-    return fillObject(CommentRdo, newTask);
+    const newComment = await this.commentService.createComment(dto);
+    return fillObject(CommentRdo, newComment);
   }
 
-  @Get('')
+  @Get('/')
   @ApiQuery({name: 'taskId'})
   @ApiResponse({
     status: HttpStatus.OK,
@@ -32,20 +32,22 @@ export class CommentController {
     type: [CommentRdo],
   })
   public async getById(@Query() {taskId}) {
-    const comments = await this.commentService.getByTaskId(taskId);
+    const id = parseInt(taskId, 10);
+    const comments = await this.commentService.getByTaskId(id);
     if (!comments) {
       throw new Error('Comments by task id not found');
     }
     return fillObject(CommentRdo, comments);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'Delete the comment by id'
   })
-  public async deleteTask(@Param() {id}) {
-    await this.commentService.deleteComment(id);
+  public async deleteTask(@Param('id') id: string) {
+    const commentId = parseInt(id, 10);
+    await this.commentService.deleteComment(commentId);
   }
 }

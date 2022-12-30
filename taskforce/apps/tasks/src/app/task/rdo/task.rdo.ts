@@ -1,13 +1,16 @@
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
 import {ApiProperty} from '@nestjs/swagger';
+import {Category, User, Tag, TaskStatus} from '@taskforce/shared-types';
+import {CommentRdo} from '../../comment/rdo/comment.rdo';
+import {ResponseRdo} from '../../response/rdo/response.rdo';
 
 export class TaskRdo {
-  @Expose({name: '_id'})
+  @Expose({name: 'id'})
   @ApiProperty({
     description: 'Task ID',
-    example: 'f90422bc-e2c7-4908-af5b-dcb6efb99b76',
+    example: 123456,
   })
-  public id: string;
+  public id: number;
 
   @Expose()
   @ApiProperty({
@@ -28,28 +31,21 @@ export class TaskRdo {
     description: 'Task category',
     example: 'Cleaning',
   })
-  public category: string;
+  public category: Category;
 
   @Expose()
   @ApiProperty({
     description: 'Author of task',
     example: 'Fox',
   })
-  public author: string;
-
-  @Expose()
-  @ApiProperty({
-    description: 'Date of creation (ISO format)',
-    example: '1982-02-20'
-  })
-  public creationDate: string;
+  public userId: User;
 
   @Expose()
   @ApiProperty({
     description: 'Task status',
     example: 'new',
   })
-  public status: string;
+  public status: TaskStatus;
 
   @Expose()
   @ApiProperty({
@@ -61,9 +57,9 @@ export class TaskRdo {
   @Expose()
   @ApiProperty({
     description: 'Due date for task',
-    example: '2022-12-11',
+    example: '2022-06-24T11:59:45.571+03',
   })
-  public dueDate: string;
+  public dueDate: Date;
 
   @Expose()
   @ApiProperty({
@@ -84,5 +80,35 @@ export class TaskRdo {
     description: 'Task tags',
     example: ['Development', 'IT'],
   })
-  public tags: string[];
+  public tags: Tag[];
+
+  @Expose()
+  @ApiProperty({
+    description: 'Comment`s Id',
+    example: [2445, 457],
+  })
+  @Type(() => CommentRdo)
+  public comments: CommentRdo[];
+
+  @Expose()
+  @ApiProperty({
+    description: 'Responses`s Id',
+    example: [548, 214],
+  })
+  @Type(() => ResponseRdo)
+  public responses: ResponseRdo[];
+
+  @Expose()
+  @ApiProperty({
+    description: 'Date of creation (ISO format)',
+    example: '2022-06-24T11:59:45.571+03'
+  })
+  public createdAt: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: 'Date of update (ISO format)',
+    example: '2022-06-24T11:59:45.571+03'
+  })
+  public updatedAt: Date;
 }
