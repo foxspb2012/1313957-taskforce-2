@@ -14,7 +14,7 @@ export class TaskController {
   ) {
   }
 
-  @Post('')
+  @Post('/')
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'The new task has been successfully created',
@@ -25,7 +25,7 @@ export class TaskController {
     return fillObject(TaskRdo, newTask);
   }
 
-  @Get(':id')
+  @Get('/:id')
   @ApiQuery({name: 'id'})
   @ApiResponse({
     status: HttpStatus.OK,
@@ -33,7 +33,7 @@ export class TaskController {
     type: TaskRdo,
   })
   public async show(@Param() {id}) {
-    const existTask = await this.taskService.getTask(id);
+    const existTask = await this.taskService.getTask(parseInt(id, 10));
 
     if (!existTask) {
       throw new Error('Task not found');
@@ -58,7 +58,7 @@ export class TaskController {
     return fillObject(TaskRdo, tasks);
   }
 
-  @Patch(':id')
+  @Patch('/:id')
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Update the task',
@@ -76,13 +76,13 @@ export class TaskController {
     return fillObject(TaskRdo, task);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'Delete the task'
   })
   public async deleteTask(@Param() {id}) {
-    await this.taskService.deleteTask(id);
+    await this.taskService.deleteTask(parseInt(id, 10));
   }
 }
