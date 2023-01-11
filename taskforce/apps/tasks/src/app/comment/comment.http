@@ -4,16 +4,16 @@ Content-Type: application/json
 
 {
   "text": "Thank you very much for your help!",
-  "taskId": "cde62511-716e-456c-bc58-cf689bd0591e",
-  "author": "Fox"
+  "taskId": 10,
+  "userId": "63a01be48cc77837a5801cce"
 }
 
 ###
 #Get commetns by task id
-GET http://localhost:3333/api/comment?taskId=cde62511-716e-456c-bc58-cf689bd0591e HTTP/1.1
+GET http://localhost:3333/api/comment?taskId=7 HTTP/1.1
 
 ###
 
 ###
 #Delete comment by id
-DELETE http://localhost:3333/api/comment/6eebf14e-3c1f-4506-8ec1-b0be3a72eb2c HTTP/1.1
+DELETE http://localhost:3333/api/comment/1 HTTP/1.1

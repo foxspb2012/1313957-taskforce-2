@@ -1,67 +1,34 @@
 import {Injectable} from '@nestjs/common';
+import {Task} from '@taskforce/shared-types';
 import {CreateTaskDto} from './dto/create-task.dto';
 import {UpdateTaskDto} from './dto/update-task.dto';
-import {Task} from '@taskforce/shared-types';
-import dayjs = require('dayjs');
-import {TaskMemoryRepository} from './task-memory.repository';
 import {TaskEntity} from './task.entity';
+import {TaskRepository} from './task.repository';
 
 @Injectable()
 export class TaskService {
-  constructor(
-    private readonly taskMemoryRepository: TaskMemoryRepository
-  ) {
+  constructor(private readonly taskRepository: TaskRepository) {}
+
+  public async getTask(id: number): Promise<Task> {
+    return this.taskRepository.findById(id);
   }
 
-  public async createTask(dto: CreateTaskDto) {
-    const {
-      title,
-      description,
-      category,
-      author,
-      creationDate,
-      status,
-      price,
-      dueDate,
-      picture,
-      address,
-      tags,
-    } = dto;
-
-    const task: Task = {
-      _id: '',
-      title,
-      description,
-      category,
-      author,
-      creationDate: dayjs(creationDate).toDate(),
-      status,
-      price,
-      dueDate,
-      picture,
-      address,
-      tags,
-    }
-
-    const taskEntity = new TaskEntity(task);
-
-    return this.taskMemoryRepository.create(taskEntity);
+  public async getByCategory(categoryId: number): Promise<Task> {
+    return this.taskRepository.findByCategory(categoryId);
   }
 
-  public async getTask(id: string): Promise<Task> | null {
-    return await this.taskMemoryRepository.findById(id);
+  public async createTask(dto: CreateTaskDto): Promise<Task> {
+    const newTaskEntity = new TaskEntity(dto);
+    return await this.taskRepository.create(newTaskEntity);
   }
 
-  public async getByCategory(category: string): Promise<Task[]> | null {
-    return await this.taskMemoryRepository.findByCategory(category);
+  public async updateTask(id: number, dto: UpdateTaskDto): Promise<Task> {
+    const updatedTaskEntity = new TaskEntity(dto);
+    return await this.taskRepository.update(id, updatedTaskEntity);
   }
 
-  public async updateTask(id: string, dto: UpdateTaskDto): Promise<Task> | null {
-    return await this.taskMemoryRepository.update(id, dto);
-  }
-
-  public async deleteTask(id: string): Promise<void> | null {
-    return await this.taskMemoryRepository.destroy(id);
+  public async deleteTask(id: number): Promise<void> {
+    await this.taskRepository.destroy(id);
   }
 }
 

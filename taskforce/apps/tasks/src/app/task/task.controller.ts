@@ -14,7 +14,7 @@ export class TaskController {
   ) {
   }
 
-  @Post('')
+  @Post('/')
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'The new task has been successfully created',
@@ -25,7 +25,7 @@ export class TaskController {
     return fillObject(TaskRdo, newTask);
   }
 
-  @Get(':id')
+  @Get('/:id')
   @ApiQuery({name: 'id'})
   @ApiResponse({
     status: HttpStatus.OK,
@@ -33,7 +33,7 @@ export class TaskController {
     type: TaskRdo,
   })
   public async show(@Param() {id}) {
-    const existTask = await this.taskService.getTask(id);
+    const existTask = await this.taskService.getTask(parseInt(id, 10));
 
     if (!existTask) {
       throw new Error('Task not found');
@@ -42,45 +42,47 @@ export class TaskController {
     return fillObject(TaskRdo, existTask);
   }
 
-  @Get('')
-  @ApiQuery({name: 'category'})
+  @Get('/')
+  @ApiQuery({name: 'categoryId'})
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Information about tasks of the same category',
     type: [TaskRdo],
   })
-  public async getByCategory(@Query() {category}) {
-    const tasks = await this.taskService.getByCategory(category);
+  public async getByCategory(@Query() {categoryId}) {
+    const id = parseInt(categoryId, 10);
+    const tasks = await this.taskService.getByCategory(id);
     if (!tasks) {
       throw new Error('Tasks by category not found');
     }
     return fillObject(TaskRdo, tasks);
   }
 
-  @Patch(':id')
+  @Patch('/:id')
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Update the task',
     type: [TaskRdo],
   })
   public async update(@Param() {id}, @Body() dto: UpdateTaskDto) {
-    const existTask = await this.taskService.getTask(id);
+    const taskId = parseInt(id, 10);
+    const existTask = await this.taskService.getTask(taskId);
 
     if (!existTask) {
       throw new Error('Task not found');
     }
 
-    const task = await this.taskService.updateTask(id, dto);
+    const task = await this.taskService.updateTask(taskId, dto);
     return fillObject(TaskRdo, task);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'Delete the task'
   })
   public async deleteTask(@Param() {id}) {
-    await this.taskService.deleteTask(id);
+    await this.taskService.deleteTask(parseInt(id, 10));
   }
 }

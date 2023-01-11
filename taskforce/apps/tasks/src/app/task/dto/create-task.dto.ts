@@ -1,4 +1,4 @@
-import {TaskStatus, User} from "@taskforce/shared-types";
+import {TaskStatus, Category, Tag} from "@taskforce/shared-types";
 import {ApiProperty} from "@nestjs/swagger";
 
 export class CreateTaskDto {
@@ -18,25 +18,20 @@ export class CreateTaskDto {
     description: 'Task category',
     example: 'Cleaning',
   })
-  public category: string;
+  public category: Category;
 
   @ApiProperty({
-    description: 'Author of task',
-    example: 'Fox',
+    description: 'Id author of task',
+    example: '63a01be48cc77837a5801cce',
   })
-  public author: User;
-
-  @ApiProperty({
-    description: 'Date of creation (ISO format)',
-    example: '1982-02-20'
-  })
-  public creationDate: Date;
+  public authorId: string;
 
   @ApiProperty({
     description: 'Task status',
     example: 'new',
+    required: false,
   })
-  public status: TaskStatus;
+  public status?: TaskStatus;
 
   @ApiProperty({
     description: 'Task price',
@@ -47,7 +42,7 @@ export class CreateTaskDto {
 
   @ApiProperty({
     description: 'Due date for task',
-    example: '2022-12-11',
+    example: '2022-06-24T11:59:45.571+03',
     required: false,
   })
   public dueDate?: Date;
@@ -71,5 +66,5 @@ export class CreateTaskDto {
     example: ['Development', 'IT'],
     required: false,
   })
-  public tags?: string[];
+  public tags?: Tag[];
 }

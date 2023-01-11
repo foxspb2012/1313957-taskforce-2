@@ -1,43 +1,25 @@
 import {Injectable} from '@nestjs/common';
-import dayjs = require('dayjs');
-import {CommentMemoryRepository} from './comment-memory.repository';
-import {CommentEntity} from './comment.entity';
+import {CommentRepository} from './comment.repository';
 import {Comment} from '@taskforce/shared-types';
 import {CreateCommentDto} from './dto/create-comment.dto';
+import {CommentEntity} from './comment.entity';
+
 
 @Injectable()
 export class CommentService {
-  constructor(
-    private readonly commentMemoryRepository: CommentMemoryRepository
-  ) {
+  constructor(private readonly commentRepository: CommentRepository) {
   }
 
-  public async createComment(dto: CreateCommentDto) {
-    const {
-      text,
-      taskId,
-      author,
-      creationDate,
-    } = dto;
-
-    const comment: Comment = {
-      _id: '',
-      text,
-      taskId,
-      author,
-      creationDate: dayjs(creationDate).toDate(),
-    }
-
-    const commentEntity = new CommentEntity(comment);
-
-    return this.commentMemoryRepository.create(commentEntity);
+  public async createComment(dto: CreateCommentDto): Promise<Comment> {
+    const newCommentEntity = new CommentEntity(dto);
+    return await this.commentRepository.create(newCommentEntity);
   }
 
-  public async getByTaskId(taskId: string): Promise<Comment[]> | null {
-    return await this.commentMemoryRepository.findByTaskId(taskId);
+  public async getByTaskId(taskId: number): Promise<Comment[]> {
+    return await this.commentRepository.getByTaskId(taskId);
   }
 
-  public async deleteComment(id: string): Promise<void> | null {
-    return await this.commentMemoryRepository.destroy(id);
+  public async deleteComment(id: number): Promise<void> {
+    return await this.commentRepository.destroy(id);
   }
 }

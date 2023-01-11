@@ -1,9 +1,9 @@
-import {ReviewRepository} from '@taskforce/core';
-import {ResponseEntity} from './respoonse.entity';
+import {CRUDRepository} from '@taskforce/core';
+import {ResponseEntity} from './response.entity';
 import {Response} from '@taskforce/shared-types';
 import * as crypto from 'crypto';
 
-export class ResponseMemoryRepository implements ReviewRepository<ResponseEntity, string, Response> {
+export class ResponseMemoryRepository implements CRUDRepository<ResponseEntity, string, Response> {
   private repository: { [key: string]: Response } = {};
 
   public async create(item: ResponseEntity): Promise<Response> {
@@ -12,7 +12,19 @@ export class ResponseMemoryRepository implements ReviewRepository<ResponseEntity
     return {...entry};
   }
 
-  public async findByTaskId(id: string): Promise<Response[]> | null {
+  public async findById(id: string): Promise<Response> | null {
+    return Promise.resolve(undefined);
+  }
+
+  public async update(id: string, item: ResponseEntity): Promise<Response> {
+    return Promise.resolve(undefined);
+  }
+
+  public async destroy(id: string): Promise<void> | null {
+    delete this.repository[id];
+  }
+
+  public async findByTaskId(id: number): Promise<Response[]> | null {
     return Object.values(this.repository).filter((reviewItem) => reviewItem.taskId === id);
   }
 }

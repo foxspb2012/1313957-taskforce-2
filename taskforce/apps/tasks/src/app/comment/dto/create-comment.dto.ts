@@ -1,4 +1,3 @@
-import {User} from "@taskforce/shared-types";
 import {ApiProperty} from "@nestjs/swagger";
 
 export class CreateCommentDto {
@@ -10,19 +9,13 @@ export class CreateCommentDto {
 
   @ApiProperty({
     description: 'Task id for the comment',
-    example: 'cde62511-716e-456c-bc58-cf689bd0591e',
+    example: 25,
   })
-  public taskId: string;
+  public taskId: number;
 
   @ApiProperty({
-    description: 'Author of comment',
-    example: 'Fox',
+    description: 'User id of comment',
+    example: '63a01be48cc77837a5801cce',
   })
-  public author: User;
-
-  @ApiProperty({
-    description: 'Date of creation (ISO format)',
-    example: '2022-12-03'
-  })
-  public creationDate: Date;
+  public userId: string;
 }

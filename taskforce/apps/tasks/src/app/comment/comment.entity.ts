@@ -1,11 +1,12 @@
-import {Comment, User} from '@taskforce/shared-types';
+import {Entity} from '@taskforce/core';
+import {Comment} from '@taskforce/shared-types';
 
-export class CommentEntity implements Comment {
-  public _id: string;
+export class CommentEntity implements Entity<CommentEntity>, Comment {
+  public id?: number;
   public text: string;
-  public taskId: string;
-  public author: User;
-  public creationDate: Date;
+  public taskId: number;
+  public userId: string;
+  public createdAt?: Date;
 
   constructor(comment: Comment) {
     this.fillEntity(comment);
@@ -16,10 +17,8 @@ export class CommentEntity implements Comment {
   }
 
   public fillEntity(comment: Comment) {
-    this._id = comment._id;
     this.text = comment.text;
     this.taskId = comment.taskId;
-    this.author = comment.author;
-    this.creationDate = comment.creationDate;
+    this.userId = comment.userId;
   }
 }

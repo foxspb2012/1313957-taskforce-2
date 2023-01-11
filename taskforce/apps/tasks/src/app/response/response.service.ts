@@ -1,39 +1,21 @@
 import {Injectable} from '@nestjs/common';
-import dayjs = require('dayjs');
-import {ResponseEntity} from './respoonse.entity';
 import {Response} from '@taskforce/shared-types';
+import {ResponseEntity} from './response.entity';
 import {CreateResponseDto} from './dto/create-response';
-import {ResponseMemoryRepository} from './response-memory.repository';
+import {ResponseRepository} from './response.repository';
 
 @Injectable()
 export class ResponseService {
   constructor(
-    private readonly responseMemoryRepository: ResponseMemoryRepository
+    private readonly responseRepository: ResponseRepository
   ) {
   }
-
-  public async create(dto: CreateResponseDto) {
-    const {
-      text,
-      taskId,
-      author,
-      creationDate,
-    } = dto;
-
-    const response: Response = {
-      _id: '',
-      text,
-      taskId,
-      author,
-      creationDate: dayjs(creationDate).toDate(),
-    }
-
-    const responseEntity = new ResponseEntity(response);
-
-    return this.responseMemoryRepository.create(responseEntity);
+  public async createResponse(dto: CreateResponseDto): Promise<Response> {
+    const response = new ResponseEntity(dto);
+    return await this.responseRepository.create(response);
   }
-
-  public async getByTaskId(taskId: string): Promise<Response[]> | null {
-    return await this.responseMemoryRepository.findByTaskId(taskId);
+  public async getByTaskId(taskId: number): Promise<Response[]> {
+    return await this.responseRepository.findByTaskId(taskId);
   }
 }
+

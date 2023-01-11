@@ -1,15 +1,17 @@
 import {Expose} from "class-transformer";
+import {IsOptional} from 'class-validator';
 import {ApiProperty} from "@nestjs/swagger";
 
 export class ResponseRdo {
-  @Expose({name: '_id'})
+  @Expose({name: 'id'})
   @ApiProperty({
     description: 'Response ID',
-    example: 'f90422bc-e2c7-4908-af5b-dcb6efb99b76',
+    example: 34,
   })
-  public id: string;
+  public id: number;
 
   @Expose()
+  @IsOptional()
   @ApiProperty({
     description: 'Text of response',
     example: 'I`m ready for it!',
@@ -17,16 +19,17 @@ export class ResponseRdo {
   public text: string;
 
   @Expose()
+  @IsOptional()
   @ApiProperty({
-    description: 'Author of response',
-    example: 'Fox',
+    description: 'Offered  price',
+    example: 100500
   })
-  public author: string;
+  public price: number;
 
   @Expose()
   @ApiProperty({
-    description: 'Date of creation (ISO format)',
-    example: '2022-12-03'
+    description: 'User id of the response',
+    example: '63a01be48cc77837a5801cce',
   })
-  public creationDate: string;
+  public userId: string;
 }
