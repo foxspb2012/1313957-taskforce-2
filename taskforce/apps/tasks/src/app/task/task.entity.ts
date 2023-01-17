@@ -24,7 +24,7 @@ export class TaskEntity implements Entity<TaskEntity>, Task {
     return {
       ...this,
       price: this.price || 0,
-      tags: this.tags ? this.tags.map(({id}) => ({id})) : [],
+      tags: this.tags ? this.tags.map((tag) => ({title: tag})) : [],
       comments: this.comments ? this.comments.map(({id}) => ({id})) : [],
       responses: this.responses ? this.responses.map(({id}) => ({id})) : [],
     };
