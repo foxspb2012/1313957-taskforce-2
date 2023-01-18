@@ -3,7 +3,7 @@ import {ApiProperty} from '@nestjs/swagger';
 
 export class UserRdo {
   @Expose({name: '_id'})
-  @Transform(({ obj }) => obj._id)
+  @Transform(({ obj }) => obj._id.toString())
   @ApiProperty({
     description: 'The uniq user ID',
     example: '0667dea8-fbb7-41d0-8ff3-5b44539dbfad'

@@ -31,8 +31,8 @@ export class FeedbackController {
     description: 'Feedbacks by the userId',
     type: [FeedbackRdo],
   })
-  public async getById(@Query() {taskId}) {
-    const feedbacks = await this.feedbackService.getByUserId(taskId);
+  public async getById(@Query() {userId}) {
+    const feedbacks = await this.feedbackService.getByUserId(userId);
     if (!feedbacks) {
       throw new Error('Feedbacks by task id not found');
     }

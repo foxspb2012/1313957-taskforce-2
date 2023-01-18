@@ -1,18 +1,21 @@
-import {Injectable, Inject} from '@nestjs/common';
+import {Injectable, Inject, UnauthorizedException} from '@nestjs/common';
 import {SiteUserRepository} from '../site-user/site-user.repository';
-import {AUTH_USER_EXISTS, AUTH_USER_NOT_FOUND, AUTH_USER_PASSWORD_WRONG, AUTH_USER_BY_ID} from './auth.constant';
+import {AUTH_USER_NOT_FOUND, AUTH_USER_PASSWORD_WRONG, AUTH_USER_BY_ID} from './auth.constant';
 import {SiteUserEntity} from '../site-user/site-user.entity';
 import {User} from '@taskforce/shared-types';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {LoginUserDto} from './dto/login-user.dto';
 import {ConfigType} from '@nestjs/config';
 import databaseConfig from '../../config/database.config';
+import {JwtService} from '@nestjs/jwt';
 import * as dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly siteUserRepository: SiteUserRepository,
+    private readonly jwtService: JwtService,
+
     @Inject(databaseConfig.KEY)
     private readonly mongoConfig: ConfigType<typeof databaseConfig>,
   ) {
@@ -28,7 +31,7 @@ export class AuthService {
       .findByEmail(email);
 
     if (existUser) {
-      throw new Error(AUTH_USER_EXISTS);
+      throw new UnauthorizedException(AUTH_USER_NOT_FOUND);
     }
 
     const userEntity = await new SiteUserEntity(siteUser).setPassword(password)
@@ -37,7 +40,7 @@ export class AuthService {
       .create(userEntity);
   }
 
-  async login(dto: LoginUserDto) {
+  async verifyUser(dto: LoginUserDto) {
     const {email, password} = dto;
     const existUser = await this.siteUserRepository.findByEmail(email);
 
@@ -61,5 +64,18 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async loginUser(user: User) {
+    const payload = {
+      sub: user._id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+    };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 }

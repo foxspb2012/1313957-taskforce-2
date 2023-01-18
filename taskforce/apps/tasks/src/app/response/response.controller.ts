@@ -3,6 +3,7 @@ import {ApiQuery, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {ResponseService} from './response.service';
 import {CreateResponseDto} from './dto/create-response';
 import {ResponseRdo} from './rdo/response.rdo';
+import {ResponseQuery} from './query/response.query';
 import {fillObject} from '@taskforce/core';
 
 @ApiTags('response')
@@ -31,9 +32,8 @@ export class ResponseController {
     description: 'Response by the taskId',
     type: [ResponseRdo],
   })
-  public async getById(@Query() {taskId}) {
-    const id = parseInt(taskId, 10);
-    const responses = await this.responseService.getByTaskId(id);
+  public async getById(@Query() {taskId}: ResponseQuery) {
+    const responses = await this.responseService.getByTaskId(taskId);
     if (!responses) {
       throw new Error('Responses by task id not found');
     }
