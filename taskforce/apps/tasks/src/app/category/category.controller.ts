@@ -15,7 +15,7 @@ export class CategoryController {
     type: CreateCategoryDto,
     status: HttpStatus.CREATED,
   })
-  @Get()
+  @Get('/')
   async getCategories() {
     return await this.categoryService.getCategories();
   }

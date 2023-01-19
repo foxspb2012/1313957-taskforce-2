@@ -1,5 +1,6 @@
 import {Entity} from '@taskforce/core';
 import {Task, TaskStatus, Category, Comment, Response, Tag} from '@taskforce/shared-types';
+import * as dayjs from 'dayjs';
 
 export class TaskEntity implements Entity<TaskEntity>, Task {
   public title: string;
@@ -23,8 +24,10 @@ export class TaskEntity implements Entity<TaskEntity>, Task {
   public toObject() {
     return {
       ...this,
+      dueDate: this.dueDate ? dayjs(this.dueDate).toDate() : null,
       price: this.price || 0,
-      tags: this.tags ? this.tags.map(({id}) => ({id})) : [],
+      category: this.category ? { title: this.category } : {},
+      tags: this.tags ? this.tags.map((tag) => ({title: tag})) : [],
       comments: this.comments ? this.comments.map(({id}) => ({id})) : [],
       responses: this.responses ? this.responses.map(({id}) => ({id})) : [],
     };

@@ -3,6 +3,7 @@ import {ApiQuery, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {CommentService} from './comment.service';
 import {CreateCommentDto} from './dto/create-comment.dto';
 import {CommentRdo} from './rdo/comment.rdo';
+import {CommentQuery} from './query/comment.query';
 import {fillObject} from '@taskforce/core';
 
 @ApiTags('comment')
@@ -31,9 +32,8 @@ export class CommentController {
     description: 'Comments by the taskId',
     type: [CommentRdo],
   })
-  public async getById(@Query() {taskId}) {
-    const id = parseInt(taskId, 10);
-    const comments = await this.commentService.getByTaskId(id);
+  public async getById(@Query() {taskId}: CommentQuery) {
+    const comments = await this.commentService.getByTaskId(taskId);
     if (!comments) {
       throw new Error('Comments by task id not found');
     }
@@ -46,8 +46,7 @@ export class CommentController {
     status: HttpStatus.NO_CONTENT,
     description: 'Delete the comment by id'
   })
-  public async deleteTask(@Param('id') id: string) {
-    const commentId = parseInt(id, 10);
-    await this.commentService.deleteComment(commentId);
+  public async deleteTask(@Param('id') id: number) {
+    await this.commentService.deleteComment(id);
   }
 }

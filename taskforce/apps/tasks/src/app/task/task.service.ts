@@ -4,17 +4,19 @@ import {CreateTaskDto} from './dto/create-task.dto';
 import {UpdateTaskDto} from './dto/update-task.dto';
 import {TaskEntity} from './task.entity';
 import {TaskRepository} from './task.repository';
+import {TaskQuery} from './query/task.query';
 
 @Injectable()
 export class TaskService {
-  constructor(private readonly taskRepository: TaskRepository) {}
+  constructor(private readonly taskRepository: TaskRepository) {
+  }
 
   public async getTask(id: number): Promise<Task> {
     return this.taskRepository.findById(id);
   }
 
-  public async getByCategory(categoryId: number): Promise<Task> {
-    return this.taskRepository.findByCategory(categoryId);
+  public async getTasks(query: TaskQuery): Promise<Task[]> {
+    return await this.taskRepository.find(query);
   }
 
   public async createTask(dto: CreateTaskDto): Promise<Task> {

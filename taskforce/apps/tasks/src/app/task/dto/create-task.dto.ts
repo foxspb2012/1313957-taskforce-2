@@ -1,5 +1,11 @@
 import {TaskStatus, Category, Tag} from "@taskforce/shared-types";
 import {ApiProperty} from "@nestjs/swagger";
+import {
+  ArrayMaxSize,
+  IsOptional,
+  Length,
+  Matches,
+} from 'class-validator';
 
 export class CreateTaskDto {
   @ApiProperty({
@@ -64,7 +70,26 @@ export class CreateTaskDto {
   @ApiProperty({
     description: 'Task tags',
     example: ['Development', 'IT'],
+    maxItems: 5,
+    type: 'array',
+    items: {
+      type: 'string',
+      description: 'Task tag starting with a letter',
+      minLength: 3,
+      maxLength: 10,
+      example: 'tag',
+    },
     required: false,
   })
+  @Matches(/^[ЁёА-яa-zA-Z]{1}.*$/, {
+    each: true,
+    message:  'Теги должны начинаться с буквы',
+  })
+  @Length(3, 10, {
+    each: true,
+    message: 'Длина тегов должна быть не менее 3 символов, и не более 10',
+  })
+  @ArrayMaxSize(5, { message: 'Максимальное количество тегов - 5' })
+  @IsOptional()
   public tags?: Tag[];
 }

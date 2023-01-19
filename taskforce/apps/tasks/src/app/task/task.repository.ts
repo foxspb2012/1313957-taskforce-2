@@ -4,10 +4,57 @@ import {CRUDRepository} from '@taskforce/core';
 import {Task, TaskStatus} from '@taskforce/shared-types';
 import {PrismaService} from '../prisma/prisma.service';
 import {TaskEntity} from './task.entity';
+import {TaskQuery} from './query/task.query';
 
 @Injectable()
 export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> {
   constructor(private readonly prisma: PrismaService) {
+  }
+
+  public async find({
+    category: queryCategory,
+    tags: queryTags,
+    limit,
+    city,
+    page,
+    sortingDirection,
+    sortingOption,
+  }: TaskQuery): Promise<Task[]> {
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        category: {
+          title: queryCategory,
+        },
+        tags: {
+          some: {
+            tagId: {
+              in: queryTags,
+            },
+          },
+        },
+        address: {
+          contains: city,
+        },
+      },
+      orderBy:
+        sortingOption === 'createdAt'
+          ? {createdAt: sortingDirection}
+          : {
+            [sortingOption]: {
+              _count: sortingDirection,
+            },
+          },
+      include: {
+        category: true,
+        tags: true,
+        _count: {
+          select: {comments: true, responses: true},
+        },
+      },
+      take: limit,
+      skip: page > 0 ? limit * (page - 1) : undefined,
+    });
+    return tasks.map((task) => this.convertTask(task));
   }
 
   public async findById(id: number): Promise<Task> {
@@ -16,21 +63,9 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
       include: {
         category: true,
         tags: true,
-        comments: true,
-        responses: true,
-      },
-    });
-    return this.convertTask(task);
-  }
-
-  public async findByCategory(categoryId: number): Promise<Task> {
-    const task = await this.prisma.task.findMany({
-      where: {categoryId},
-      include: {
-        category: true,
-        tags: true,
-        comments: true,
-        responses: true,
+        _count: {
+          select: {comments: true, responses: true},
+        },
       },
     });
     return this.convertTask(task);
@@ -38,6 +73,13 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
 
   public async create(item: TaskEntity): Promise<Task> {
     const entityData = {...item.toObject()};
+
+    // await this.prisma.tag.create({
+    //   data: {
+    //     ...entityData.tags.map(tag => tag.title)
+    //   }
+    // });
+
     const newTask = await this.prisma.task.create({
       data: {
         title: entityData.title,
@@ -57,18 +99,18 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
             },
           },
         },
-        tags: {
-          connectOrCreate: [
-            ...entityData.tags.map((tag) => ({
-              where: {
-                title: tag.title,
-              },
-              create: {
-                title: tag.title,
-              },
-            })),
-          ],
-        },
+        // tags: {
+        //   connectOrCreate: [
+        //     ...entityData.tags.map((tag) => ({
+        //       where: {
+        //         title: tag.title,
+        //       },
+        //       create: {
+        //         title: tag.title,
+        //       },
+        //     })),
+        //   ],
+        // },
         comments: {
           connect: [],
         },
@@ -111,18 +153,18 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
             },
           }
           : {},
-        tags: {
-          connectOrCreate: [
-            ...entityData.tags.map((tag) => ({
-              where: {
-                title: tag.title,
-              },
-              create: {
-                title: tag.title,
-              },
-            })),
-          ],
-        },
+        // tags: {
+        //   connectOrCreate: [
+        //     ...entityData.tags.map((tag) => ({
+        //       where: {
+        //         title: tag.title,
+        //       },
+        //       create: {
+        //         title: tag.title,
+        //       },
+        //     })),
+        //   ],
+        // },
         comments: {
           connect: [],
         },
@@ -149,12 +191,10 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
       ...prismaTask,
       price: Number(prismaTask.price),
       status: TaskStatus[prismaTask.status],
-      responses:
-        prismaTask.responses.length > 0 &&
-        prismaTask.responses.map((response) => ({
-          ...response,
-          price: Number(response.price),
-        })),
+      category: prismaTask.category.title,
+      tags: prismaTask.tags.map((tag) => tag.title),
+      commentsCount: prismaTask._count?.comments || 0,
+      responsesCount: prismaTask._count?.responses || 0,
     };
   }
 }
