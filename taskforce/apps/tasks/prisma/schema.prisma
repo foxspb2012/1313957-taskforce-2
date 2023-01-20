@@ -24,7 +24,7 @@ model Task {
   status        Status     @default(New)
   authorId      String
   contractorId  String?
-  tags          TagsOnTasks[]
+  tags          Tag[]
   comments      Comment[]
   responses     Response[]
   createdAt     DateTime   @default(now())
@@ -44,20 +44,9 @@ model Category {
 model Tag {
   id    Int     @id @default(autoincrement())
   title String  @unique
-  tasks TagsOnTasks[]
+  tasks Task[]
 
   @@map("Tags")
-}
-
-model TagsOnTasks {
-  task        Task     @relation(fields: [taskId], references: [id])
-  taskId      Int
-  tags        Tag      @relation(fields: [tagId], references: [id])
-  tagId       Int
-  assignedAt  DateTime @default(now())
-  assignedBy  String
-
-  @@id([taskId, tagId])
 }
 
 model Comment {

@@ -1,12 +1,10 @@
-import {Injectable, Inject, UnauthorizedException} from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {SiteUserRepository} from '../site-user/site-user.repository';
-import {AUTH_USER_NOT_FOUND, AUTH_USER_PASSWORD_WRONG, AUTH_USER_BY_ID} from './auth.constant';
+import {AUTH_USER_NOT_FOUND, AUTH_USER_EXISTS, AUTH_USER_BY_ID, AUTH_USER_PASSWORD_WRONG} from './auth.constant';
 import {SiteUserEntity} from '../site-user/site-user.entity';
-import {User} from '@taskforce/shared-types';
+import {User, UserRole} from '@taskforce/shared-types';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {LoginUserDto} from './dto/login-user.dto';
-import {ConfigType} from '@nestjs/config';
-import databaseConfig from '../../config/database.config';
 import {JwtService} from '@nestjs/jwt';
 import * as dayjs from 'dayjs';
 
@@ -15,23 +13,20 @@ export class AuthService {
   constructor(
     private readonly siteUserRepository: SiteUserRepository,
     private readonly jwtService: JwtService,
-
-    @Inject(databaseConfig.KEY)
-    private readonly mongoConfig: ConfigType<typeof databaseConfig>,
   ) {
   }
 
   async register(dto: CreateUserDto) {
-    const {name, email, role, dateBirth, city, password} = dto;
+    const {name, email, dateBirth, city, password} = dto;
     const siteUser: User = {
-      name, email, role, dateBirth: dayjs(dateBirth).toDate(), city, avatar: '', passwordHash: '', rating: 0
+      name, email, role: UserRole.Customer, dateBirth: dayjs(dateBirth).toDate(), city, avatar: '', passwordHash: '', rating: 0
     };
 
     const existUser = await this.siteUserRepository
       .findByEmail(email);
 
     if (existUser) {
-      throw new UnauthorizedException(AUTH_USER_NOT_FOUND);
+      throw new Error(AUTH_USER_EXISTS);
     }
 
     const userEntity = await new SiteUserEntity(siteUser).setPassword(password)
@@ -45,12 +40,12 @@ export class AuthService {
     const existUser = await this.siteUserRepository.findByEmail(email);
 
     if (!existUser) {
-      throw new Error(AUTH_USER_NOT_FOUND);
+      throw new UnauthorizedException(AUTH_USER_NOT_FOUND);
     }
 
     const siteUserEntity = new SiteUserEntity(existUser);
     if (!await siteUserEntity.comparePassword(password)) {
-      throw new Error(AUTH_USER_PASSWORD_WRONG);
+      throw new UnauthorizedException(AUTH_USER_PASSWORD_WRONG);
     }
 
     return siteUserEntity.toObject();

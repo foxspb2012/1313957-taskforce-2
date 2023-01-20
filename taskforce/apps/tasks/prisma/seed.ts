@@ -25,15 +25,6 @@ const tags: { title: string }[] = faker.helpers.uniqueArray(
   SUB_MOCK_COUNT
 );
 
-const tagsOnTasks: { taskId: number, tagId: number, assignedBy: string }[] = faker.helpers.uniqueArray(
-  () => ({
-    tagId: faker.helpers.arrayElement([1, 2, 3, 4, 5]),
-    taskId: faker.helpers.arrayElement([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
-    assignedBy: faker.lorem.word().toLowerCase(),
-  }),
-  SUB_MOCK_COUNT
-);
-
 const cities = ['Москва', 'Санкт-Петербург', 'Владивосток'];
 
 async function fillDb() {
@@ -48,6 +39,7 @@ async function fillDb() {
   console.info('Tags were created');
 
   const categoryIds = await prisma.category.findMany({select: {id: true}});
+  const tagIds = await prisma.tag.findMany({select: {id: true}});
 
   for (let i = 1; i <= MOCK_COUNT; i++) {
     const currentUserIds = faker.helpers.shuffle(userIds);
@@ -78,6 +70,9 @@ async function fillDb() {
         price: faker.helpers.maybe(() => Number(faker.commerce.price()), {
           probability: 0.7,
         }),
+        tags: {
+          connect: faker.helpers.arrayElements(tagIds),
+        },
         comments: {
           createMany: {
             data: Array.from(
@@ -109,11 +104,6 @@ async function fillDb() {
       },
     });
   }
-
-  await prisma.tagsOnTasks.createMany({
-    data: tagsOnTasks,
-  });
-  console.info('Tags on tasks were created');
 
   console.info('🤘️ Database was filled');
 }
