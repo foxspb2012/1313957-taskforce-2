@@ -27,7 +27,7 @@ export class TaskEntity implements Entity<TaskEntity>, Task {
       dueDate: this.dueDate ? dayjs(this.dueDate).toDate() : null,
       price: this.price || 0,
       category: this.category ? { title: this.category } : {},
-      tags: this.tags ? this.tags.map((tag) => ({title: tag})) : [],
+      tags: this.tags ? this.tags.map((tag) => ({title: tag.toLowerCase()})) : [],
       comments: this.comments ? this.comments.map(({id}) => ({id})) : [],
       responses: this.responses ? this.responses.map(({id}) => ({id})) : [],
     };

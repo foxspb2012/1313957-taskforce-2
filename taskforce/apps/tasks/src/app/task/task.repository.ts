@@ -12,8 +12,8 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
   }
 
   public async find({
-    category: queryCategory,
-    tags: queryTags,
+    category,
+    tags,
     limit,
     city,
     page,
@@ -23,12 +23,12 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
     const tasks = await this.prisma.task.findMany({
       where: {
         category: {
-          title: queryCategory,
+          title: category,
         },
         tags: {
           some: {
-            tagId: {
-              in: queryTags,
+            title: {
+              in: tags,
             },
           },
         },
@@ -74,12 +74,6 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
   public async create(item: TaskEntity): Promise<Task> {
     const entityData = {...item.toObject()};
 
-    // await this.prisma.tag.create({
-    //   data: {
-    //     ...entityData.tags.map(tag => tag.title)
-    //   }
-    // });
-
     const newTask = await this.prisma.task.create({
       data: {
         title: entityData.title,
@@ -99,18 +93,18 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
             },
           },
         },
-        // tags: {
-        //   connectOrCreate: [
-        //     ...entityData.tags.map((tag) => ({
-        //       where: {
-        //         title: tag.title,
-        //       },
-        //       create: {
-        //         title: tag.title,
-        //       },
-        //     })),
-        //   ],
-        // },
+        tags: {
+          connectOrCreate: [
+            ...entityData.tags.map((tag) => ({
+              where: {
+                title: tag.title,
+              },
+              create: {
+                title: tag.title,
+              },
+            })),
+          ],
+        },
         comments: {
           connect: [],
         },
@@ -153,18 +147,18 @@ export class TaskRepository implements CRUDRepository<TaskEntity, number, Task> 
             },
           }
           : {},
-        // tags: {
-        //   connectOrCreate: [
-        //     ...entityData.tags.map((tag) => ({
-        //       where: {
-        //         title: tag.title,
-        //       },
-        //       create: {
-        //         title: tag.title,
-        //       },
-        //     })),
-        //   ],
-        // },
+        tags: {
+          connectOrCreate: [
+            ...entityData.tags.map((tag) => ({
+              where: {
+                title: tag.title,
+              },
+              create: {
+                title: tag.title,
+              },
+            })),
+          ],
+        },
         comments: {
           connect: [],
         },

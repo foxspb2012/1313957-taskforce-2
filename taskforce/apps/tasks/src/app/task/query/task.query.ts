@@ -28,13 +28,13 @@ export class TaskQuery {
     type: 'array',
     required: false,
     items: {
-      type: 'number',
+      type: 'string',
     },
   })
   @IsArray({})
-  @Transform(({value}) => value.split(','))
+  @Transform(({value}) => value.toLowerCase().split(','))
   @IsOptional()
-  public tags?: number[];
+  public tags?: string[];
 
   @ApiProperty({
     name: 'city',
