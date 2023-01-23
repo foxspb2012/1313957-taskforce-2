@@ -1,24 +1,26 @@
-import {Tag} from '../tag/tag.interface';
-import {Comment} from '../comment/comment.interface';
-import {Category} from '../category/category.interface';
-import {Response} from '../response/response.interface';
-import {TaskStatus} from './task-status.enum';
+import {
+  Feedback,
+  Skill,
+  Tag,
+  TaskFile
+} from '@taskforce/shared-types';
+import {TaskStatus} from './task-status.type';
 
 export interface Task {
   id?: number;
-  title: string,
-  description: string,
-  category: Category,
-  authorId: string;
+  clientId: string;
   contractorId?: string;
+  title: string;
+  description: string;
+  skills?: Skill[];
+  dueDate?: Date;
+  budget?: number;
+  image?: string;
+  address?: string;
+  tags?: Tag[];
+  created?: Date;
   status?: TaskStatus;
-  price?: number,
-  dueDate?: Date,
-  picture?: string,
-  address?: string,
-  tags?: Tag[],
-  comments?: Comment[];
-  responses?: Response[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  feedbacks?: Feedback[];
+  files?: TaskFile[];
+  city: string;
 }

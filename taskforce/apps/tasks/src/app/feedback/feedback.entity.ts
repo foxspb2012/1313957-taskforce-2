@@ -2,23 +2,25 @@ import {Entity} from '@taskforce/core';
 import {Feedback} from '@taskforce/shared-types';
 
 export class FeedbackEntity implements Entity<FeedbackEntity>, Feedback {
-  public text: string;
-  public taskId: number;
-  public score: number;
-  public userId: string;
+  budget: number;
+  comment: string;
+  id: number;
+  taskId: number;
+  userId: string;
 
   constructor(feedback: Feedback) {
     this.fillEntity(feedback);
   }
 
   public toObject(): FeedbackEntity {
-    return {...this};
+    return {...this}
   }
 
-  public fillEntity(item: Feedback) {
-    this.text = item.text;
-    this.taskId = item.taskId;
-    this.score = item.score;
-    this.userId = item.userId;
+  public fillEntity(taskReply: Feedback) {
+    this.budget = taskReply.budget;
+    this.comment = taskReply.comment;
+    this.id = taskReply.id;
+    this.taskId = taskReply.taskId;
+    this.userId = taskReply.userId;
   }
 }

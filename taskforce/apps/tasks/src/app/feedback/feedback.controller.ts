@@ -1,9 +1,9 @@
-import {Body, Controller, Get, HttpStatus, Post, Query} from '@nestjs/common';
-import {ApiQuery, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post} from '@nestjs/common';
 import {FeedbackService} from './feedback.service';
 import {CreateFeedbackDto} from './dto/create-feedback.dto';
-import {FeedbackRdo} from './rdo/feedback.rdo';
 import {fillObject} from '@taskforce/core';
+import {ReplyRdo} from './rdo/reply.rdo';
+import {ApiResponse, ApiTags} from '@nestjs/swagger';
 
 @ApiTags('feedback')
 @Controller('feedback')
@@ -13,29 +13,45 @@ export class FeedbackController {
   ) {
   }
 
-  @Post('/')
+  @Post()
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'The new feedback has been successfully created',
-    type: FeedbackRdo,
+    description: 'A new task reply is created'
   })
   public async create(@Body() dto: CreateFeedbackDto) {
-    const newFeedback = await this.feedbackService.createFeedback(dto);
-    return fillObject(FeedbackRdo, newFeedback);
+    const reply = await this.feedbackService.create(dto);
+    return fillObject(ReplyRdo, reply)
+  }
+
+  @Get(':id')
+  @ApiResponse({
+    type: ReplyRdo,
+    status: HttpStatus.OK,
+    description: 'Reply found'
+  })
+  public async show(@Param('id') id: number) {
+    const reply = await this.feedbackService.getOne(id);
+    return fillObject(ReplyRdo, reply)
   }
 
   @Get('/')
-  @ApiQuery({name: 'userId'})
   @ApiResponse({
+    type: [ReplyRdo],
     status: HttpStatus.OK,
-    description: 'Feedbacks by the userId',
-    type: [FeedbackRdo],
+    description: 'List of replies found'
   })
-  public async getById(@Query() {userId}) {
-    const feedbacks = await this.feedbackService.getByUserId(userId);
-    if (!feedbacks) {
-      throw new Error('Feedbacks by task id not found');
-    }
-    return fillObject(FeedbackRdo, feedbacks);
+  public async index() {
+    const replies = await this.feedbackService.getAll();
+    return fillObject(ReplyRdo, replies)
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Reply was deleted'
+  })
+  public async delete(@Param('id') id: number) {
+    return this.feedbackService.delete(id);
   }
 }

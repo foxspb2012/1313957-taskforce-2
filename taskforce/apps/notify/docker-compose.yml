@@ -1,8 +1,15 @@
 version: '3.5'
 services:
+  fakesmtp:
+    image: gessnerfl/fake-smtp-server
+    container_name: "taskforce.notify.fakesmtp"
+    ports:
+      - '5025:5025'
+      - '1083:5080'
+
   rabbitmq:
     image: rabbitmq:3.11-management
-    container_name: taskforce-rabbirmq
+    container_name: 'taskforce-rabbirmq'
     ports:
       - '5672:5672'
       - '1084:15672'
@@ -15,14 +22,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-
-  fakesmtp:
-    image: gessnerfl/fake-smtp-server
-    container_name: 'fakesmtp'
-    hostname: 'fakesmtp'
-    ports:
-      - '5025:5025'
-      - '1083:5080'
 
   mongodb:
     image: mongo

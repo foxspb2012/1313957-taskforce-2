@@ -1,0 +1,27 @@
+### Upload a task file
+POST http://localhost:3332/api/upload/task/5 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2M0ZmU4NjYzNjlhZmVhODQ5YzhlYjgiLCJlbWFpbCI6ImtlcnJpLmR1ZGxleUBleGFtcGxlLmNvbSIsIm5hbWUiOiJHZXJhbGRpbmUgUm9tYWd1ZXJhIiwicm9sZSI6IkNsaWVudCIsImlhdCI6MTY3Mzk4NDQ0MSwiZXhwIjoxNjczOTg1MzQxfQ.nqZtb8VPhIk9UcvAKOUAL9e-w7_45LXHW-VSKM6tUOg
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="hill.jpg"
+Content-Type: image/jpeg
+
+< /Users/sk/Desktop/tmp/hill.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Upload an avatar file
+POST http://localhost:3332/api/upload/avatar/63c4fe866369afea849c8eb8 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2M0ZmU4NjYzNjlhZmVhODQ5YzhlYjgiLCJlbWFpbCI6ImtlcnJpLmR1ZGxleUBleGFtcGxlLmNvbSIsIm5hbWUiOiJHZXJhbGRpbmUgUm9tYWd1ZXJhIiwicm9sZSI6IkNsaWVudCIsImlhdCI6MTY3Mzk4NTM5NCwiZXhwIjoxNjczOTg2Mjk0fQ.2KPy35MZrMUUjL72qjpX5BAphZvOikl4suyx9lbQmHQ
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="avatar.png"
+Content-Type: image/jpeg
+
+< /Users/sk/Desktop/tmp/avatar.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+### Get a file
+GET http://localhost:3332/api/upload/1673984701825.hill.jpg

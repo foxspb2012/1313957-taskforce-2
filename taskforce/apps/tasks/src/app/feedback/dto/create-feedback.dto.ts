@@ -1,27 +1,44 @@
-import {ApiProperty} from "@nestjs/swagger";
+import {ApiProperty} from '@nestjs/swagger';
+import {IsMongoId, IsNumber, MaxLength, MinLength} from 'class-validator';
+import {CreateFeedbackError} from '../feedback.constants';
+import {DoesTaskExist} from '../../validators';
+import {FeedbackText} from '../feedback.constants';
 
 export class CreateFeedbackDto {
   @ApiProperty({
-    description: 'Text of feedback',
-    example: 'A very good performer!',
+    description: 'A budget of the task',
+    example: '100',
   })
-  public text: string;
+  @IsNumber()
+  budget: number;
 
   @ApiProperty({
-    description: 'Task id for the feedback',
-    example: 25,
+    description: 'A text of the task reply',
+    example:
+      'Могу сделать всё в лучшем виде. У меня есть необходимый опыт и инструменты.',
   })
-  public taskId: number;
+  @MinLength(FeedbackText.MIN, {
+    message: CreateFeedbackError.FEEDBACK_TOO_SHORT,
+  })
+  @MaxLength(FeedbackText.MAX, {
+    message: CreateFeedbackError.FEEDBACK_TOO_LONG,
+  })
+  comment: string;
 
   @ApiProperty({
-    description: 'Scores of the feedback',
-    example: 4,
+    description: 'Task ID',
+    example: '5',
   })
-  public score: number;
+  @IsNumber()
+  @DoesTaskExist({
+    message: CreateFeedbackError.TASK_DOESNT_EXIST,
+  })
+  taskId: number;
 
   @ApiProperty({
-    description: 'Author id of feedback',
-    example: '63a01be48cc77837a5801cce',
+    description: 'User ID',
+    example: '638dac5ca3a0dafd519c1827',
   })
-  public userId: string;
+  @IsMongoId()
+  userId: string;
 }

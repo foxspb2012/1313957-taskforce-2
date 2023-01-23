@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common';
-import {Feedback, Response} from '@taskforce/shared-types';
-import {FeedbackEntity} from './feedback.entity';
 import {CreateFeedbackDto} from './dto/create-feedback.dto';
+import {FeedbackEntity} from './feedback.entity';
 import {FeedbackRepository} from './feedback.repository';
+import {Feedback} from '@taskforce/shared-types';
 
 @Injectable()
 export class FeedbackService {
@@ -11,12 +11,20 @@ export class FeedbackService {
   ) {
   }
 
-  public async createFeedback(dto: CreateFeedbackDto): Promise<Feedback> {
-    const feedback = new FeedbackEntity(dto);
-    return await this.feedbackRepository.create(feedback);
+  public async create(dto: CreateFeedbackDto) {
+    const replyEntity = new FeedbackEntity(dto);
+    return this.feedbackRepository.create(replyEntity);
   }
 
-  public async getByUserId(id: string): Promise<Response[]> {
-    return await this.feedbackRepository.findByUserId(id);
+  public async getOne(id: number) {
+    return this.feedbackRepository.findById(id);
+  }
+
+  public async getAll(): Promise<Feedback[]> {
+    return this.feedbackRepository.find();
+  }
+
+  public async delete(id: number) {
+    await this.feedbackRepository.destroy(id);
   }
 }

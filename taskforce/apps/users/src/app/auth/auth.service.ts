@@ -1,25 +1,40 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Inject, Injectable, UnauthorizedException} from '@nestjs/common';
 import {SiteUserRepository} from '../site-user/site-user.repository';
-import {AUTH_USER_NOT_FOUND, AUTH_USER_EXISTS, AUTH_USER_BY_ID, AUTH_USER_PASSWORD_WRONG} from './auth.constant';
+import {
+  AUTH_USER_NOT_FOUND,
+  AUTH_USER_EXISTS,
+  AUTH_USER_BY_ID,
+  AUTH_USER_PASSWORD_WRONG,
+  RABBITMQ_SERVICE
+} from './auth.constant';
 import {SiteUserEntity} from '../site-user/site-user.entity';
-import {User, UserRole} from '@taskforce/shared-types';
+import {CommandEvent, User, UserRole} from '@taskforce/shared-types';
 import {CreateUserDto} from './dto/create-user.dto.js';
 import {LoginUserDto} from './dto/login-user.dto';
 import {JwtService} from '@nestjs/jwt';
 import * as dayjs from 'dayjs';
+import {ClientProxy} from '@nestjs/microservices';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly siteUserRepository: SiteUserRepository,
     private readonly jwtService: JwtService,
+    @Inject(RABBITMQ_SERVICE) private readonly rabbitClient: ClientProxy,
   ) {
   }
 
   async register(dto: CreateUserDto) {
     const {name, email, dateBirth, city, password} = dto;
     const siteUser: User = {
-      name, email, role: UserRole.Customer, dateBirth: dayjs(dateBirth).toDate(), city, avatar: '', passwordHash: '', rating: 0
+      name,
+      email,
+      role: UserRole.Customer,
+      dateBirth: dayjs(dateBirth).toDate(),
+      city,
+      avatar: '',
+      passwordHash: '',
+      rating: 0
     };
 
     const existUser = await this.siteUserRepository
@@ -29,10 +44,22 @@ export class AuthService {
       throw new Error(AUTH_USER_EXISTS);
     }
 
-    const userEntity = await new SiteUserEntity(siteUser).setPassword(password)
+    const userEntity = await new SiteUserEntity(siteUser).setPassword(password);
 
-    return this.siteUserRepository
+
+    const createdUser = await this.siteUserRepository
       .create(userEntity);
+
+    this.rabbitClient.emit(
+      { cmd: CommandEvent.AddSubscriber },
+      {
+        email: createdUser.email,
+        name: createdUser.name,
+        userId: createdUser._id.toString(),
+      }
+    );
+
+    return createdUser;
   }
 
   async verifyUser(dto: LoginUserDto) {

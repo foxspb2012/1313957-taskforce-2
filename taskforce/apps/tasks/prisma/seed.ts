@@ -1,111 +1,81 @@
-import {PrismaClient, Status} from '@prisma/client';
-import {faker} from '@faker-js/faker/locale/ru';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const MOCK_COUNT = 10;
-const SUB_MOCK_COUNT = 5;
-
-const userIds = faker.helpers.uniqueArray(
-  faker.database.mongodbObjectId,
-  MOCK_COUNT
-);
-
-const categories: { title: string }[] = faker.helpers.uniqueArray(
-  () => ({
-    title: faker.random.word().toLowerCase(),
-  }),
-  SUB_MOCK_COUNT
-);
-
-const tags: { title: string }[] = faker.helpers.uniqueArray(
-  () => ({
-    title: faker.random.word().toLowerCase(),
-  }),
-  SUB_MOCK_COUNT
-);
-
-const cities = ['Москва', 'Санкт-Петербург', 'Владивосток'];
-
 async function fillDb() {
-  await prisma.category.createMany({
-    data: categories,
-  });
-  console.info('Categories were created');
-
-  await prisma.tag.createMany({
-    data: tags,
-  });
-  console.info('Tags were created');
-
-  const categoryIds = await prisma.category.findMany({select: {id: true}});
-  const tagIds = await prisma.tag.findMany({select: {id: true}});
-
-  for (let i = 1; i <= MOCK_COUNT; i++) {
-    const currentUserIds = faker.helpers.shuffle(userIds);
-
-    await prisma.task.upsert({
-      where: {id: i},
-      update: {},
-      create: {
-        title: faker.lorem.words(),
-        description: faker.lorem.paragraph(),
-        category: {
-          connect: faker.helpers.arrayElement(categoryIds),
-        },
-        picture: faker.helpers.maybe(() => faker.image.imageUrl(), {
-          probability: 0.5,
-        }),
-        status: faker.helpers.maybe(
-          () => Status[faker.helpers.arrayElement(Object.keys(Status))],
-          {probability: 0.7}
-        ),
-        authorId: currentUserIds[0],
-        address: `${faker.helpers.arrayElement(
-          cities
-        )} ${faker.address.streetAddress()}`,
-        dueDate: faker.helpers.maybe(() => faker.date.soon(5), {
-          probability: 0.3,
-        }),
-        price: faker.helpers.maybe(() => Number(faker.commerce.price()), {
-          probability: 0.7,
-        }),
-        tags: {
-          connect: faker.helpers.arrayElements(tagIds),
-        },
-        comments: {
-          createMany: {
-            data: Array.from(
-              {length: Number(faker.random.numeric())},
-              () => ({
-                text: faker.lorem.sentence(),
-                userId: faker.helpers.arrayElement(currentUserIds.slice(1)),
-              })
-            ),
+  await prisma.skill.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      name: 'Клининг',
+      tasks: {
+        create: [
+          {
+            clientId: '638dac5ca3a0dafd519c1827',
+            title: 'Убрать квартиру после вписки',
+            description:
+              'Ut nec ipsum sapien. Interdum et malesuada fames ac ante ipsum',
+            dueDate: new Date('2022-12-20'),
+            budget: 2500,
+            address: 'Новый Арбат, 23, к. 1',
+            city: 'Москва',
           },
-        },
-        responses: {
-          createMany: {
-            data: Array.from(
-              {length: Number(faker.random.numeric())},
-              () => ({
-                text: faker.lorem.sentence(),
-                price: faker.helpers.maybe(
-                  () => Number(faker.commerce.price()),
-                  {
-                    probability: 0.7,
-                  }
-                ),
-                userId: faker.helpers.arrayElement(currentUserIds.slice(1)),
-              })
-            ),
-          },
-        },
+        ],
       },
-    });
-  }
+    },
+  });
 
-  console.info('🤘️ Database was filled');
+  await prisma.skill.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      name: 'Переводы',
+      tasks: {
+        create: [
+          {
+            clientId: '638dac5ca3a0dafd519c1827',
+            title: 'Перевести войну и мир на клингонский',
+            description:
+              'Countless powerdrains will be lost in ionic cannons like cores in sonic showers ',
+            dueDate: new Date('2022-12-22'),
+            budget: 3400,
+            address: 'улица Генерала Рычагова, 18, к. 22',
+            city: 'Москва',
+            feedbacks: {
+              create: [
+                {
+                  userId: '638dac5ca3a0dafd519c1828',
+                  comment:
+                    'Могу сделать всё в лучшем виде. У меня есть необходимый опыт и инструменты.',
+                  budget: 3700,
+                },
+              ],
+            },
+            tags: {
+              create: [
+                {
+                  title: 'startrack',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.review.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      contractorId: `638dac5ca3a0dafd519c1828`,
+      taskId: 1,
+      text: `Кумар сделал всё в лучшем виде. Буду обращаться к нему в будущем, если возникнет такая необходимость!`,
+      rating: 4,
+    },
+  });
+
+  console.log('🤘 Database was filled');
 }
 
 fillDb()
@@ -113,7 +83,8 @@ fillDb()
     await prisma.$disconnect();
   })
   .catch(async (err) => {
-    console.log(err);
-    await prisma.$disconnect;
+    console.error(err);
+    await prisma.$disconnect();
+
     process.exit(1);
   });
